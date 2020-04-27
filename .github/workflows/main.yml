@@ -1,0 +1,44 @@
+name: pipeline
+on: [push]
+
+jobs:
+  pipeline:
+    name: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ['ubuntu-latest', 'macos-latest']
+    steps:
+      - uses: actions/checkout@v1
+      - uses: goanpeca/setup-miniconda@v1.1.2
+        with:
+          miniconda-version: '4.7.12'
+      - name: Init
+        run: |
+          curl -s https://raw.githubusercontent.com/bricksflow/project-creator/${GITHUB_REF:11}/create_project.sh | bash -s myproject mydir
+          cd mydir
+          eval "$(conda shell.bash hook)"
+          conda activate "$PWD/.venv"
+          ./run_tests.sh
+          ./pylint.sh
+
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: goanpeca/setup-miniconda@v1.1.2
+        with:
+          miniconda-version: '4.7.12'
+      - name: Update PATH
+        shell: bash -l {0}
+        run: echo "::add-path::/c/Miniconda3/Scripts"
+      - name: Init
+        run: |
+          curl -s https://raw.githubusercontent.com/bricksflow/project-creator/${GITHUB_REF:11}/create_project.sh | bash -s myproject mydir
+          cd mydir
+          eval "$(conda shell.bash hook)"
+          conda activate "$PWD/.venv"
+          ./run_tests.sh
+          ./pylint.sh
+        shell: sh {0}
