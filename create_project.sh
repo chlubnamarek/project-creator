@@ -93,6 +93,8 @@ PROJECT_DIR="$PWD/$DIR_NAME"
 initial_checks
 download_repo
 
+perl -i -pe "s/t${PROJECT_TEMPLATE_NAME}t/$PROJECT_NAME/g" "$MASTER_DIR/pyproject.toml"
+
 replace_string_in_dir "$MASTER_DIR" "$PROJECT_TEMPLATE_NAME" "$PROJECT_NAME"
 rename_package_name "$MASTER_DIR" "$PROJECT_TEMPLATE_NAME" "$PROJECT_NAME"
 
