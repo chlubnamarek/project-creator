@@ -3,7 +3,7 @@
 Create a **new Bricksflow project** by using the following command:
 
 ```
-source /dev/stdin <<< "$(curl -s "https://raw.githubusercontent.com/bricksflow/project-creator/master/create_project.sh")"
+source <(curl -s https://raw.githubusercontent.com/bricksflow/project-creator/master/create_project.sh)
 ```
 
 ###  What is does:
