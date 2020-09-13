@@ -83,13 +83,13 @@ else
 fi
 
 if [ -z ${2+x} ]; then
-  read -p "Enter the directory name [$PROJECT_NAME]: " DIR_NAME
-  DIR_NAME="${DIR_NAME:-$PROJECT_NAME}"
+  read -p "Enter the root module name [$PROJECT_NAME]: " ROOT_MODULE_NAME
+  ROOT_MODULE_NAME="${ROOT_MODULE_NAME:-$PROJECT_NAME}"
 else
-  DIR_NAME="$2"
+  ROOT_MODULE_NAME="$2"
 fi
 
-PROJECT_DIR="$PWD/$DIR_NAME"
+PROJECT_DIR="$PWD/$ROOT_MODULE_NAME"
 
 initial_checks
 download_repo
