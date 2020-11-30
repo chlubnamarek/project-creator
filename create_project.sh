@@ -72,7 +72,7 @@ finalize() {
   mv "$MASTER_DIR/"* "$PROJECT_DIR"
   mv "$MASTER_DIR/".[!.]* "$PROJECT_DIR"
 
-  (cd "$PROJECT_DIR" && ENV_INIT_BRANCH=$ENV_INIT_BRANCH ./env-init.sh)
+  (cd "$PROJECT_DIR" && ENV_INIT_BRANCH=$ENV_INIT_BRANCH ./env-init.sh -y)
 }
 
 if [ -z ${1+x} ]; then
