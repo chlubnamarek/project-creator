@@ -14,34 +14,28 @@ jobs:
         os: ['ubuntu-latest', 'macos-latest']
     steps:
       - uses: actions/checkout@v1
-      - uses: goanpeca/setup-miniconda@v1.1.2
+      - uses: conda-incubator/setup-miniconda@v2.0.0
         with:
-          miniconda-version: '4.7.12'
+          miniconda-version: 'py38_4.8.3'
       - name: Init
         run: |
-          curl -s https://raw.githubusercontent.com/bricksflow/project-creator/${GITHUB_REF:11}/create_project.sh | bash -s myproject mydir
-          cd mydir
-          eval "$(conda shell.bash hook)"
-          conda activate "$PWD/.venv"
-          ./run_tests.sh
-          ./pylint.sh
+          export SHELL=$SHELL # for python to be able to access the bash version
+          source ./.github/workflows/platforms.sh
+          run_tests
 
   windows:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v1
-      - uses: goanpeca/setup-miniconda@v1.1.2
+      - uses: conda-incubator/setup-miniconda@v2.0.0
         with:
-          miniconda-version: '4.7.12'
+          miniconda-version: 'py38_4.8.3'
       - name: Update PATH
         shell: bash -l {0}
-        run: echo "::add-path::/c/Miniconda3/Scripts"
+        run: echo "/c/Miniconda3/Scripts" >> $GITHUB_PATH
       - name: Init
         run: |
-          curl -s https://raw.githubusercontent.com/bricksflow/project-creator/${GITHUB_REF:11}/create_project.sh | bash -s myproject mydir
-          cd mydir
-          eval "$(conda shell.bash hook)"
-          conda activate "$PWD/.venv"
-          ./run_tests.sh
-          ./pylint.sh
+          export SHELL=$SHELL # for python to be able to access the bash version
+          source ./.github/workflows/platforms.sh
+          run_tests
         shell: sh {0}
