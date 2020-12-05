@@ -4,7 +4,6 @@ DIR_TEMPLATE_NAME="__bricksflow__"
 PROJECT_TEMPLATE_NAME="__myproject__"
 
 if [[ -z "$BRICKSFLOW_BRANCH" ]]; then BRICKSFLOW_BRANCH="master"; fi
-if [[ -z "$ENV_INIT_BRANCH" ]]; then ENV_INIT_BRANCH="master"; fi
 
 replace_string_in_file() {
   local FILE_PATH="$1"
@@ -72,7 +71,7 @@ finalize() {
   mv "$MASTER_DIR/"* "$PROJECT_DIR"
   mv "$MASTER_DIR/".[!.]* "$PROJECT_DIR"
 
-  (cd "$PROJECT_DIR" && ENV_INIT_BRANCH=$ENV_INIT_BRANCH ./env-init.sh -y)
+  (cd "$PROJECT_DIR" && ./env-init.sh -y)
 }
 
 if [ -z ${1+x} ]; then
