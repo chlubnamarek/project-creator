@@ -58,31 +58,45 @@ initial_checks() {
 
 download_repo() {
   local TEMPLATE_URL="$1"
-
   echo "Preparing project template..."
 
   local EXTENSION="${TEMPLATE_URL##*.}"
 
-  if [ "$EXTENSION" != "zip" ]; then
+  if [[ "$TEMPLATE_URL" == "https://dev.azure.com/"* ]]; then
+    local TMP_DIR=$(mktemp -d)
+    local TEMPLATE_FILENAME="bricksflow-template.zip"
+    local TEMPLATE_FILE_NO_EXT="${TEMPLATE_FILENAME%.*}"
+
+    echo "Downloading project template from: $TEMPLATE_URL"
+    curl -u :$PAT_TOKEN "$TEMPLATE_URL" --silent -o "$TMP_DIR/$TEMPLATE_FILENAME"
+
+    echo "Unziping $TMP_DIR/$TEMPLATE_FILENAME into $TMP_DIR/$TEMPLATE_FILE_NO_EXT"
+
+    unzip -qq "$TMP_DIR/$TEMPLATE_FILENAME" -d "$TMP_DIR/$TEMPLATE_FILE_NO_EXT"
+    rm -f "$TMP_DIR/$TEMPLATE_FILENAME"
+
+    EXTRACT_DIR="$TMP_DIR/$TEMPLATE_FILE_NO_EXT"
+    PYCHARM_CONFIG_DIR="$EXTRACT_DIR/.idea"
+  elif [ "$EXTENSION" != "zip" ]; then
     echo "Project template must be in zip format"
     return 1
+  else
+    local TMP_DIR=$(mktemp -d)
+    local TEMPLATE_FILENAME="$(basename -- $TEMPLATE_URL)"
+
+    echo "Downloading project template from: $TEMPLATE_URL"
+    curl -sSL "$TEMPLATE_URL" --silent -o "$TMP_DIR/$TEMPLATE_FILENAME"
+
+    echo "Unziping $TMP_DIR/$TEMPLATE_FILENAME into $TMP_DIR"
+
+    unzip -qq "$TMP_DIR/$TEMPLATE_FILENAME" -d "$TMP_DIR"
+    rm -f "$TMP_DIR/$TEMPLATE_FILENAME"
+
+    local TEMPLATE_FILE_NO_EXT="${TEMPLATE_FILENAME%.*}"
+
+    EXTRACT_DIR="$TMP_DIR/bricksflow-$TEMPLATE_FILE_NO_EXT"
+    PYCHARM_CONFIG_DIR="$EXTRACT_DIR/.idea"
   fi
-
-  local TMP_DIR=$(mktemp -d)
-  local TEMPLATE_FILENAME="$(basename -- $TEMPLATE_URL)"
-
-  echo "Downloading project template from: $TEMPLATE_URL"
-  curl -sSL "$TEMPLATE_URL" --silent -o "$TMP_DIR/$TEMPLATE_FILENAME"
-
-  echo "Unziping $TMP_DIR/$TEMPLATE_FILENAME into $TMP_DIR"
-
-  unzip -qq "$TMP_DIR/$TEMPLATE_FILENAME" -d "$TMP_DIR"
-  rm -f "$TMP_DIR/$TEMPLATE_FILENAME"
-
-  local TEMPLATE_FILE_NO_EXT="${TEMPLATE_FILENAME%.*}"
-
-  EXTRACT_DIR="$TMP_DIR/bricksflow-$TEMPLATE_FILE_NO_EXT"
-  PYCHARM_CONFIG_DIR="$EXTRACT_DIR/.idea"
 }
 
 rename_package_name() {
@@ -110,7 +124,7 @@ finalize() {
   mv "$EXTRACT_DIR/"* "$PROJECT_DIR"
   mv "$EXTRACT_DIR/".[!.]* "$PROJECT_DIR"
 
-  (cd "$PROJECT_DIR" && ./env-init.sh -y)
+  (cd "$PROJECT_DIR" && chmod +x ./env-init.sh && ./env-init.sh -y)
 }
 
 create_project_from_template() {
@@ -130,7 +144,7 @@ if resolve_arguments "$@"; then
   PROJECT_DIR="$PWD/$ROOT_MODULE_NAME"
 
   if initial_checks; then
-    if download_repo "$TEMPLATE_URL"; then
+    if download_repo "$TEMPLATE_URL" "$PAT_TOKEN"; then
       create_project_from_template
     fi
   fi
