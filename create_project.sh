@@ -1,16 +1,16 @@
 #!/bin/bash -e
 
-DIR_TEMPLATE_NAME="__bricksflow__"
+DIR_TEMPLATE_NAME="__daipe__"
 PROJECT_TEMPLATE_NAME="__myproject__"
 
 resolve_arguments() {
   if [ -z ${1+x} ]; then
-    echo "Usage ./create_project.sh PROJECT_TEMPLATE_URL|BRICKSFLOW_REPO_NAME [PROJECT_NAME] [ROOT_MODULE_NAME]"
+    echo "Usage ./create_project.sh PROJECT_TEMPLATE_URL|DAIPE_REPO_NAME [PROJECT_NAME] [ROOT_MODULE_NAME]"
     return 1
   elif [[ "$1" == "https://"* ]]; then
     TEMPLATE_URL="$1"
   else
-    TEMPLATE_URL="https://github.com/bricksflow/$1/archive/master.zip"
+    TEMPLATE_URL="https://github.com/daipe-ai/$1/archive/master.zip"
   fi
 
   if [ -z ${2+x} ]; then
@@ -81,7 +81,7 @@ download_repo() {
 
   local TEMPLATE_FILE_NO_EXT="${TEMPLATE_FILENAME%.*}"
 
-  EXTRACT_DIR="$TMP_DIR/bricksflow-$TEMPLATE_FILE_NO_EXT"
+  EXTRACT_DIR="$TMP_DIR/skeleton-databricks-$TEMPLATE_FILE_NO_EXT"
   PYCHARM_CONFIG_DIR="$EXTRACT_DIR/.idea"
 }
 
